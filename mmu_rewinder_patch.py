@@ -46,7 +46,7 @@ class MmuRewinderPatch:
       ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
       return ret
-    elif trace_str == "Final parking":
+    elif trace_str == "Reverse homing to gate sensor":  # TODO: handle case without gate sensor
       self.rewind_control("rewind_slow")
       ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
