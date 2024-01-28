@@ -33,7 +33,7 @@ class MmuRewinderPatch:
     self.mmu._unload_gate = self._unload_gate
     self.mmu._load_bowden = self._load_bowden
 
-  def _unload_bowden(self, length):
+  def _unload_bowden(self, *args, **kwargs):
 
     def servo_down():
       ret = self.mmu._servo_down()
@@ -41,12 +41,12 @@ class MmuRewinderPatch:
       return ret
 
     with patch_method(self.mmu, '_servo_down', servo_down):
-      ret = self.mmu._unload_bowden(length)
+      ret = self.mmu._unload_bowden(*args, **kwargs)
       self.rewind_control("stop")
 
     return ret
 
-  def _unload_gate(self, length):
+  def _unload_gate(self, *args, **kwargs):
 
     def servo_down():
       ret = self.mmu._servo_down()
@@ -54,12 +54,12 @@ class MmuRewinderPatch:
       return ret
 
     with patch_method(self.mmu, '_servo_down', servo_down):
-      ret = self.mmu._unload_gate(length)
+      ret = self.mmu._unload_gate(*args, **kwargs)
       self.rewind_control("stop")
 
     return ret
 
-  def _load_bowden(self, length):
+  def _load_bowden(self, *args, **kwargs):
 
     def servo_down():
       ret = self.mmu._servo_down()
@@ -67,7 +67,7 @@ class MmuRewinderPatch:
       return ret
 
     with patch_method(self.mmu, '_servo_down', servo_down):
-      ret = self.mmu._load_bowden(length)
+      ret = self.mmu._load_bowden(*args, **kwargs)
       self.rewind_control("stop")
 
     return ret
