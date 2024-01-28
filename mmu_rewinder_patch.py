@@ -73,7 +73,7 @@ class MmuRewinderPatch:
 
     def servo_down(old_servo_down):
       ret = old_servo_down()
-      self.rewind_control("fast_load")
+      self.rewind_control("load_fast")
       return ret
 
     with patch_method(self.mmu, '_servo_down', servo_down):
