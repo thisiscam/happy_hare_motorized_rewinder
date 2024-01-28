@@ -73,7 +73,10 @@ class MMuRewinderPatch:
 
   def rewind_control(self, mode):
     """Control the rewind motor"""
-    self.gcode.run_script_from_command("REWINDER_CONTROL VARIABLE=%s" % mode)
+    rewinder_idx = self.mmu.gate_selected
+    if type(rewinder_idx) is int:
+      self.gcode.run_script_from_command("REWINDER_CONTROL ID=%d MODE=%s" %
+                                         (rewinder_idx, mode))
 
 
 def load_config(config):
