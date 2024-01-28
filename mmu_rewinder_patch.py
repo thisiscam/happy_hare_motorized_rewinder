@@ -20,9 +20,10 @@ def patch_method(obj, method_name, new_method):
     setattr(obj, method_name, old_method)
 
 
-class MMuRewinderPatch:
+class MmuRewinderPatch:
 
   def __init__(self, config):
+    self.printer = config.get_printer()
     self.mmu = self.printer.lookup_object('mmu')
     self.gcode = self.printer.lookup_object('gcode')
     self._patch_mmu()
@@ -80,4 +81,4 @@ class MMuRewinderPatch:
 
 
 def load_config(config):
-  return MMuRewinderPatch(config)
+  return MmuRewinderPatch(config)
