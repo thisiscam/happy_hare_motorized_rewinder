@@ -85,7 +85,6 @@ class Drv8833Motor:
                                               self.set_speed(pt, velocity, decay_mode)))
 
     def _handle_request_restart(self, print_time):
-        logging.info("test test xxxxx")
         self.set_speed(print_time, 0., 'fast')
 
     def get_status(self, eventtime):
