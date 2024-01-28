@@ -26,6 +26,7 @@ _mmu_unload_gate = None
 _mmu_load_bowden = None
 _mmu_trace_filament_move = None
 
+
 class MmuRewinderPatch:
 
   def __init__(self, config):
@@ -39,7 +40,7 @@ class MmuRewinderPatch:
     _mmu_trace_filament_move = self.mmu._trace_filament_move
     self.mmu._trace_filament_move = self._trace_filament_move
 
-   def _trace_filament_move(self, trace_str, *args, **kwargs):
+  def _trace_filament_move(self, trace_str, *args, **kwargs):
     if trace_str == "Course unloading move from bowden":
       self.rewind_control("rewind_fast")
       ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
