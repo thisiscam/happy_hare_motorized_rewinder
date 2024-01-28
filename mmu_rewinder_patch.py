@@ -13,7 +13,8 @@ def patch_method(obj, method_name, new_method):
   It takes care of exception handling and restoring the original method
   """
   old_method = getattr(obj, method_name)
-  setattr(obj, method_name, new_method)
+  setattr(obj, method_name,
+          lambda *args, **kwargs: new_method(old_method, *args, **kwargs))
   try:
     yield
   finally:
@@ -44,8 +45,8 @@ class MmuRewinderPatch:
 
   def _unload_bowden(self, *args, **kwargs):
 
-    def servo_down():
-      ret = self.mmu._servo_down()
+    def servo_down(old_servo_down):
+      ret = old_servo_down()
       self.rewind_control("rewind_fast")
       return ret
 
@@ -57,8 +58,8 @@ class MmuRewinderPatch:
 
   def _unload_gate(self, *args, **kwargs):
 
-    def servo_down():
-      ret = self.mmu._servo_down()
+    def servo_down(old_servo_down):
+      ret = old_servo_down()
       self.rewind_control("rewind_slow")
       return ret
 
@@ -70,8 +71,8 @@ class MmuRewinderPatch:
 
   def _load_bowden(self, *args, **kwargs):
 
-    def servo_down():
-      ret = self.mmu._servo_down()
+    def servo_down(old_servo_down):
+      ret = old_servo_down()
       self.rewind_control("fast_load")
       return ret
 
