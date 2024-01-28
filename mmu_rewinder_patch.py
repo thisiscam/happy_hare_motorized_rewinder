@@ -24,7 +24,7 @@ def patch_method(obj, method_name, new_method):
 _mmu_unload_bowden = None
 _mmu_unload_gate = None
 _mmu_load_bowden = None
-
+_mmu_trace_filament_move = None
 
 class MmuRewinderPatch:
 
@@ -35,52 +35,28 @@ class MmuRewinderPatch:
     self._patch_mmu()
 
   def _patch_mmu(self):
-    global _mmu_unload_bowden, _mmu_unload_gate, _mmu_load_bowden
-    _mmu_unload_bowden = self.mmu._unload_bowden
-    _mmu_unload_gate = self.mmu._unload_gate
-    _mmu_load_bowden = self.mmu._load_bowden
-    self.mmu._unload_bowden = self._unload_bowden
-    self.mmu._unload_gate = self._unload_gate
-    self.mmu._load_bowden = self._load_bowden
+    global _mmu_trace_filament_move
+    _mmu_trace_filament_move = self.mmu._trace_filament_move
+    self.mmu._trace_filament_move = self._trace_filament_move
 
-  def _unload_bowden(self, *args, **kwargs):
-
-    def servo_down(old_servo_down):
-      ret = old_servo_down()
+   def _trace_filament_move(self, trace_str, *args, **kwargs):
+    if trace_str == "Course unloading move from bowden":
       self.rewind_control("rewind_fast")
-      return ret
-
-    with patch_method(self.mmu, '_servo_down', servo_down):
-      ret = _mmu_unload_bowden(*args, **kwargs)
+      ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
-
-    return ret
-
-  def _unload_gate(self, *args, **kwargs):
-
-    def servo_down(old_servo_down):
-      ret = old_servo_down()
+      return ret
+    elif trace_str == "Final parking":
       self.rewind_control("rewind_slow")
-      return ret
-
-    with patch_method(self.mmu, '_servo_down', servo_down):
-      ret = _mmu_unload_gate(*args, **kwargs)
+      ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
-
-    return ret
-
-  def _load_bowden(self, *args, **kwargs):
-
-    def servo_down(old_servo_down):
-      ret = old_servo_down()
+      return ret
+    elif trace_str == "Course loading move into bowden":
       self.rewind_control("load_fast")
-      return ret
-
-    with patch_method(self.mmu, '_servo_down', servo_down):
-      ret = _mmu_load_bowden(*args, **kwargs)
+      ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
-
-    return ret
+      return ret
+    else:
+      return _mmu_trace_filament_move(trace_str, *args, **kwargs)
 
   def rewind_control(self, mode):
     """Control the rewind motor"""
