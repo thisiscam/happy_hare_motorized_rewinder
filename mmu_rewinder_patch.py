@@ -7,7 +7,6 @@
 #pylint:disable=protected-access
 
 import contextlib
-import bleak
 import asyncio
 import threading
 import configfile
@@ -30,6 +29,8 @@ def patch_method(obj, method_name, new_method):
 
 _mmu_trace_filament_move = None
 
+bleak = None
+
 
 class MmuRewinderPatch:
   """Patch the MMU to control the rewind motors"""
@@ -41,6 +42,12 @@ class MmuRewinderPatch:
     self.printer.register_event_handler('klippy:connect', self.handle_connect)
     self.printer.register_event_handler("klippy:disconnect",
                                         self.handle_disconnect)
+    global bleak
+    try:
+      import bleak
+    except ImportError:
+      raise config.error("MmuRewinderPatch requires bleak module")
+
     self.ble_loop = None
     self.ble_addresses = config.get('ble_addresses', "").split(',')
     self.ble_devices = []
