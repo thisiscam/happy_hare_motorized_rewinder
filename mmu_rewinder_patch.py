@@ -42,7 +42,7 @@ class MmuRewinderPatch:
     self.printer.register_event_handler("klippy:disconnect",
                                         self.handle_disconnect)
     self.ble_loop = None
-    self.ble_addresses = config.get('ble_addresses', []).split(',')
+    self.ble_addresses = config.get('ble_addresses', "").split(',')
     self.ble_devices = []
     self.ble_timeout = config.getfloat('ble_timeout', 10.0)
 
