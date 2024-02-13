@@ -51,7 +51,7 @@ class MmuRewinderPatch:
     self.ble_loop = None
     self.ble_addresses = config.get('ble_addresses', "").split(',')
     self.ble_devices = []
-    self.ble_timeout = config.getfloat('ble_timeout', 10.0)
+    self.ble_timeout = config.getfloat('ble_timeout', 20.0)
 
     self._patch_mmu()
 
