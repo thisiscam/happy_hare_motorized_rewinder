@@ -85,10 +85,11 @@ class MmuRewinderPatch:
           ble_address,
           timeout=self.ble_timeout,
           disconnected_callback=self.handle_ble_disconnect)
-      await client.connect()
-      if client.is_connected:
+      try:
+        await client.connect()
+      except bleak.exc.BleakError as e:
         raise configfile.error(
-            f"Unable to connect to BLE device at {ble_address}")
+            f"Unable to connect to BLE device at {ble_address}: {e}")
       self.mmu._log_info(f"Connected to BLE device at {ble_address}")
       self.ble_devices.append(client)
 
