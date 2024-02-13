@@ -45,19 +45,24 @@ class MmuRewinderPatch:
       self.rewind_control("rewind_fast")
       ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
-      return ret
-    elif trace_str == "Reverse homing to gate sensor":  # TODO: handle case without gate sensor
+    elif trace_str in ("Reverse homing to extruder sensor", "Reverse homing to toolhead sensor", "Bowden pre-unload test", "Reverse homing to gate sensor", "Unloading extruder", "Final parking", "Bowden pre-unload test"):  # TODO: handle case without gate sensor
       self.rewind_control("rewind_slow")
       ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
       self.rewind_control("stop")
-      return ret
+      if trace_str == "Final parking":
+          self.mmu._movequeues_wait_moves()
     elif trace_str == "Course loading move into bowden":
-      self.rewind_control("load_fast")
-      ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
-      self.rewind_control("stop")
-      return ret
+      if self.mmu.gate_selected >= 0 and self.mmu.gate_status[self.mmu.gate_selected] != self.mmu.GATE_AVAILABLE_FROM_BUFFER:
+        self.rewind_control("load_slow")
+        ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
+        self.rewind_control("stop")
+      else:
+        self.rewind_control("load_fast")
+        ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
+        self.rewind_control("stop")
     else:
-      return _mmu_trace_filament_move(trace_str, *args, **kwargs)
+      ret = _mmu_trace_filament_move(trace_str, *args, **kwargs)
+    return ret
 
   def rewind_control(self, mode):
     """Control the rewind motor"""
