@@ -75,10 +75,10 @@ class MmuRewinderPatch:
     self._setup_ble_thread()
     asyncio.run(self._connect_bles())
 
-  async def _connect_bles(self):
+  def handle_ble_disconnect(self, client, *args, **kwargs):
+    self.mmu._mmu_pause(f"BLE device {client.address} disconnected")
 
-    def handle_ble_disconnect(self, client, *args, **kwargs):
-      self.mmu._mmu_pause(f"BLE device {client.address} disconnected")
+  async def _connect_bles(self):
 
     for ble_address in self.ble_addresses:
       client = await bleak.BleakClient(
