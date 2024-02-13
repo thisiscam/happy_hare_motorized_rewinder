@@ -25,7 +25,7 @@ class Drv8833Motor:
     self.soft_start_duration = config.getfloat('soft_start_duration', 0.)
     self.ble_device_idx = config.getint('ble_device_idx', 0)
 
-    rewinder_idx = config.get_name().split()[1].split('rewinder')
+    rewinder_idx = config.get_name().split()[1].split('rewinder')[1]
     self.gcode = self.printer.lookup_object('gcode')
     self.gcode.register_mux_command('REWIND_CONTROL',
                                     'ID',
