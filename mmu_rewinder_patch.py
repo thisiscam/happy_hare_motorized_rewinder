@@ -94,7 +94,8 @@ class MmuRewinderPatch:
 
   async def _disconnect_bles(self):
     for client in self.ble_devices:
-      await client.disconnect()
+      if client.is_connected:
+        await client.disconnect()
 
   def handle_disconnect(self):
     self.run_on_ble_thread(self._disconnect_bles())
